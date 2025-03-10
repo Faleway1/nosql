@@ -1,1 +1,51 @@
-Lien vers le jeu de donnée : https://datahub.bordeaux-metropole.fr/explore/dataset/met_adresse-format-bal/information/?disjunctive.commune_nom&disjunctive.certification_commune
+**Installation de MongoDB Community et Mongo Shell**
+
+---
+
+1. **Télécharger MongoDB** :
+   - Se rendre sur le site officiel de MongoDB : [https://www.mongodb.com/try/download/community](https://www.mongodb.com/try/download/community)
+   - Sélectionner la version Community Edition et choisir le package MSI.
+2. **Installer MongoDB** :
+   - Exécuter le fichier MSI téléchargé.
+   - Suivre les instructions.
+   - Finaliser l'installation.
+
+---
+
+### **Vérifier l'installation de Mongo Shell**
+- Taper la commande suivante pour vérifier si `mongosh` est installé :
+  ```sh
+  mongosh --version
+  ```
+
+MongoDB Community Edition et Mongo Shell sont maintenant installés et prêts à être utilisés. Vous pouvez commencer à interagir avec votre base de données via le shell ou en utilisant une interface graphique comme MongoDB Compass.
+
+### **Créer une DB**
+- Il faut d'abord créer une connection 
+    Cliquer sur "Add new connection".
+    Entrer l’URI de connexion (mongodb://localhost:27017), puis cliquer sur "Connect".
+- Cliquer sur "Create database"
+    Entrer le nom de la db 
+    Entrer le nom de la première collection (par exemple "holidays") et creer la db.
+- Vous pouvez charger les données en important un fichier (par exemple un fichier en csv accessible en cliquant [ici](https://www.data.gouv.fr/fr/datasets/jours-feries-en-france/))
+
+
+### **Jeu de données utilisées dans le projet :**
+
+- On utilise dans notre projet les adresses en France
+[Lien vers le jeu de donnée](https://datahub.bordeaux-metropole.fr/explore/dataset/met_adresse-format-bal/information/?disjunctive.commune_nom&disjunctive.certification_commune)
+
+### **Lancer le projet**
+- Tout d'abord ecrivez dans le terminal :
+  ```sh
+  npm i
+  ```
+- Ensuite si tout s'est bien passé, lancez le projet en utilisant nodejs :
+  ```sh
+  node ./server.js
+  ```
+
+### **Dépendances :**
+- Express
+- Mongoose
+- nodejs
