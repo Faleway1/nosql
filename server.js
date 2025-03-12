@@ -26,7 +26,7 @@ const addressSchema = new mongoose.Schema({
 }, { strict: false });
 const Address = mongoose.model('Address', addressSchema);
 
-// GET - Liste avec pagination, projection, tri et recherche avancée
+// GET
 app.get('/addresses', async (req, res) => {
     try {
         let { page = 1, limit = 20, sortField, sortOrder, fields, search, startDate, endDate } = req.query;
@@ -66,7 +66,7 @@ app.get('/addresses', async (req, res) => {
     }
 });
 
-// POST - Ajouter une adresse avec toutes les colonnes
+// POST
 app.post('/addresses', async (req, res) => {
     try {
         const { numero, voie_nom, code_postal, commune_nom, lat, long, date_der_maj } = req.body;
@@ -78,7 +78,7 @@ app.post('/addresses', async (req, res) => {
     }
 });
 
-// PUT - Modifier une adresse
+// PUT
 app.put('/addresses/:id', async (req, res) => {
     try {
         const updatedAddress = await Address.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -88,7 +88,7 @@ app.put('/addresses/:id', async (req, res) => {
     }
 });
 
-// DELETE - Supprimer une adresse
+// DELETE
 app.delete('/addresses/:id', async (req, res) => {
     try {
         await Address.findByIdAndDelete(req.params.id);
@@ -98,5 +98,4 @@ app.delete('/addresses/:id', async (req, res) => {
     }
 });
 
-// Lancer le serveur
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
