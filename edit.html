@@ -3,84 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modifier/Supprimer une Adresse</title>
+    <title>Modifier une Adresse</title>
 </head>
 <body>
     <nav>
         <ul>
             <li><a href="index.html">Ajouter une adresse</a></li>
             <li><a href="list.html">Liste des adresses</a></li>
-            <li><a href="edit.html">Modifier/Supprimer</a></li>
         </ul>
     </nav>
     
-    <h1>Modifier ou Supprimer une Adresse</h1>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Numéro</th>
-                <th>Nom de Voie</th>
-                <th>Code Postal</th>
-                <th>Ville</th>
-                <th>Pays</th>
-                <th>Latitude</th>
-                <th>Longitude</th>
-                <th>Date de MAJ</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="addressTableBody">
-        </tbody>
-    </table>
+    <h1>Modifier une Adresse</h1>
+    <form id="editAddressForm">
+        <input type="hidden" id="addressId">
+        <input type="text" id="edit_numero" placeholder="Numéro" required>
+        <input type="text" id="edit_voie_nom" placeholder="Nom de Voie" required>
+        <input type="text" id="edit_code_postal" placeholder="Code Postal" required>
+        <input type="text" id="edit_ville" placeholder="Ville" required>
+        <input type="text" id="edit_pays" placeholder="Pays" required>
+        <input type="text" id="edit_latitude" placeholder="Latitude" required>
+        <input type="text" id="edit_longitude" placeholder="Longitude" required>
+        <button type="submit">Modifier</button>
+    </form>
 
     <script>
-        async function fetchAddresses() {
-            const response = await fetch("http://localhost:3000/addresses");
-            const addresses = await response.json();
-            
-            const tableBody = document.getElementById("addressTableBody");
-            tableBody.innerHTML = "";
-            
-            addresses.forEach(address => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>${address.numero}</td>
-                    <td>${address.voie_nom}</td>
-                    <td>${address.code_postal}</td>
-                    <td>${address.ville}</td>
-                    <td>${address.pays}</td>
-                    <td>${address.latitude}</td>
-                    <td>${address.longitude}</td>
-                    <td>${address.date_der_maj || "N/A"}</td>
-                    <td>
-                        <button onclick="editAddress('${address._id}')">Modifier</button>
-                        <button onclick="deleteAddress('${address._id}')">Supprimer</button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
+        document.addEventListener("DOMContentLoaded", async function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const addressId = urlParams.get("id");
+            if (!addressId) {
+                alert("Aucune adresse spécifiée");
+                window.location.href = "list.html";
+                return;
+            }
+            document.getElementById("addressId").value = addressId;
+
+            const response = await fetch(`http://localhost:3000/addresses/${addressId}`);
+            const address = await response.json();
+
+            document.getElementById("edit_numero").value = address.numero;
+            document.getElementById("edit_voie_nom").value = address.voie_nom;
+            document.getElementById("edit_code_postal").value = address.code_postal;
+            document.getElementById("edit_ville").value = address.ville;
+            document.getElementById("edit_pays").value = address.pays;
+            document.getElementById("edit_latitude").value = address.latitude;
+            document.getElementById("edit_longitude").value = address.longitude;
+        });
+
+        document.getElementById("editAddressForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            const addressId = document.getElementById("addressId").value;
+            const updatedAddress = {
+                numero: document.getElementById("edit_numero").value,
+                voie_nom: document.getElementById("edit_voie_nom").value,
+                code_postal: document.getElementById("edit_code_postal").value,
+                ville: document.getElementById("edit_ville").value,
+                pays: document.getElementById("edit_pays").value,
+                latitude: document.getElementById("edit_latitude").value,
+                longitude: document.getElementById("edit_longitude").value
+            };
+            await fetch(`http://localhost:3000/addresses/${addressId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(updatedAddress)
             });
-        }
-
-        async function deleteAddress(id) {
-            if (confirm("Voulez-vous vraiment supprimer cette adresse ?")) {
-                await fetch(`http://localhost:3000/addresses/${id}`, { method: "DELETE" });
-                fetchAddresses();
-            }
-        }
-
-        async function editAddress(id) {
-            const newVoieNom = prompt("Nouveau nom de voie:");
-            if (newVoieNom) {
-                await fetch(`http://localhost:3000/addresses/${id}`, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ voie_nom: newVoieNom })
-                });
-                fetchAddresses();
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", fetchAddresses);
+            window.location.href = "list.html";
+        });
     </script>
 </body>
 </html>

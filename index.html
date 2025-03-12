@@ -3,48 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ajouter une Adresse</title>
+    <title>Gestion des Adresses</title>
 </head>
 <body>
     <nav>
         <ul>
             <li><a href="index.html">Ajouter une adresse</a></li>
             <li><a href="list.html">Liste des adresses</a></li>
-            <li><a href="edit.html">Modifier/Supprimer</a></li>
         </ul>
     </nav>
     
     <h1>Ajouter une Adresse</h1>
     <form id="addAddressForm">
-        <label>Numéro:</label><input type="number" name="numero" required><br>
-        <label>Nom de Voie:</label><input type="text" name="voie_nom" required><br>
-        <label>Code Postal:</label><input type="text" name="code_postal" required><br>
-        <label>Ville:</label><input type="text" name="ville" required><br>
-        <label>Pays:</label><input type="text" name="pays" required><br>
-        <label>Latitude:</label><input type="number" step="any" name="latitude" required><br>
-        <label>Longitude:</label><input type="number" step="any" name="longitude" required><br>
-        <label>Date de MAJ:</label><input type="date" name="date_der_maj"><br>
+        <input type="text" id="numero" placeholder="Numéro" required>
+        <input type="text" id="voie_nom" placeholder="Nom de Voie" required>
+        <input type="text" id="code_postal" placeholder="Code Postal" required>
+        <input type="text" id="ville" placeholder="Ville" required>
+        <input type="text" id="pays" placeholder="Pays" required>
+        <input type="text" id="latitude" placeholder="Latitude" required>
+        <input type="text" id="longitude" placeholder="Longitude" required>
         <button type="submit">Ajouter</button>
     </form>
 
+    <h1>Liste des Adresses</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Numéro</th>
+                <th>Nom de Voie</th>
+                <th>Code Postal</th>
+                <th>Ville</th>
+                <th>Pays</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="addressTableBody"></tbody>
+    </table>
+
     <script>
-        document.getElementById("addAddressForm").addEventListener("submit", async (event) => {
+        document.getElementById("addAddressForm").addEventListener("submit", async function(event) {
             event.preventDefault();
-            const formData = new FormData(event.target);
-            const data = Object.fromEntries(formData.entries());
-            
-            const response = await fetch("http://localhost:3000/addresses", {
+            const address = {
+                numero: document.getElementById("numero").value,
+                voie_nom: document.getElementById("voie_nom").value,
+                code_postal: document.getElementById("code_postal").value,
+                ville: document.getElementById("ville").value,
+                pays: document.getElementById("pays").value,
+                latitude: document.getElementById("latitude").value,
+                longitude: document.getElementById("longitude").value
+            };
+            await fetch("http://localhost:3000/addresses", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data)
+                body: JSON.stringify(address)
             });
-            
-            if (response.ok) {
-                alert("Adresse ajoutée avec succès !");
-                event.target.reset();
-            } else {
-                alert("Erreur lors de l'ajout de l'adresse");
-            }
+            loadAddresses();
         });
+
+        async function loadAddresses() {
+            const response = await fetch("http://localhost:3000/addresses");
+            const addresses = await response.json();
+            const tableBody = document.getElementById("addressTableBody");
+            tableBody.innerHTML = "";
+            addresses.forEach(address => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${address.numero}</td>
+                    <td>${address.voie_nom}</td>
+                    <td>${address.code_postal}</td>
+                    <td>${address.ville}</td>
+                    <td>${address.pays}</td>
+                    <td>${address.latitude}</td>
+                    <td>${address.longitude}</td>
+                    <td>
+                        <button onclick="window.location.href='edit.html?id=${address._id}'">Modifier</button>
+                        <button onclick="deleteAddress('${address._id}')">Supprimer</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        async function deleteAddress(id) {
+            if (confirm("Voulez-vous vraiment supprimer cette adresse ?")) {
+                await fetch(`http://localhost:3000/addresses/${id}`, { method: "DELETE" });
+                loadAddresses();
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", loadAddresses);
     </script>
 </body>
+</html>
