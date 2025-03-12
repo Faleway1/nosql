@@ -3,40 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion des Adresses</title>
-    <script defer src="script.js"></script>
+    <title>Ajouter une Adresse</title>
 </head>
 <body>
-    <h1>Gestion des Adresses</h1>
-
-    <form id="address-form">
-        <input type="number" id="numero" placeholder="Numéro" required>
-        <input type="text" id="voie_nom" placeholder="Nom de la voie" required>
-        <input type="text" id="code_postal" placeholder="Code Postal" required>
-        <input type="text" id="ville" placeholder="Ville" required>
-        <input type="text" id="pays" placeholder="Pays" required>
-        <input type="number" step="any" id="latitude" placeholder="Latitude">
-        <input type="number" step="any" id="longitude" placeholder="Longitude">
-        <input type="date" id="date_der_maj">
+    <nav>
+        <ul>
+            <li><a href="index.html">Ajouter une adresse</a></li>
+            <li><a href="list.html">Liste des adresses</a></li>
+            <li><a href="edit.html">Modifier/Supprimer</a></li>
+        </ul>
+    </nav>
+    
+    <h1>Ajouter une Adresse</h1>
+    <form id="addAddressForm">
+        <label>Numéro:</label><input type="number" name="numero" required><br>
+        <label>Nom de Voie:</label><input type="text" name="voie_nom" required><br>
+        <label>Code Postal:</label><input type="text" name="code_postal" required><br>
+        <label>Ville:</label><input type="text" name="ville" required><br>
+        <label>Pays:</label><input type="text" name="pays" required><br>
+        <label>Latitude:</label><input type="number" step="any" name="latitude" required><br>
+        <label>Longitude:</label><input type="number" step="any" name="longitude" required><br>
+        <label>Date de MAJ:</label><input type="date" name="date_der_maj"><br>
         <button type="submit">Ajouter</button>
     </form>
 
-    <h2>Liste des Adresses</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Numéro</th>
-                <th>Voie</th>
-                <th>Code Postal</th>
-                <th>Ville</th>
-                <th>Pays</th>
-                <th>Latitude</th>
-                <th>Longitude</th>
-                <th>Date</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="addresses-list"></tbody>
-    </table>
+    <script>
+        document.getElementById("addAddressForm").addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            const response = await fetch("http://localhost:3000/addresses", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                alert("Adresse ajoutée avec succès !");
+                event.target.reset();
+            } else {
+                alert("Erreur lors de l'ajout de l'adresse");
+            }
+        });
+    </script>
 </body>
-</html>
