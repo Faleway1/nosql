@@ -4,139 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des Adresses</title>
+    <script defer src="script.js"></script>
 </head>
 <body>
-    <nav>
-        <ul>
-            <li><a href="index.html">Ajouter une adresse</a></li>
-            <li><a href="list.html">Liste des adresses</a></li>
-        </ul>
-    </nav>
-    
-    <h1>Ajouter une Adresse</h1>
-    <form id="addAddressForm">
-        <input type="text" id="numero" placeholder="Numéro" required>
-        <input type="text" id="voie_nom" placeholder="Nom de Voie" required>
+    <h1>Gestion des Adresses</h1>
+
+    <form id="address-form">
+        <input type="number" id="numero" placeholder="Numéro" required>
+        <input type="text" id="voie_nom" placeholder="Nom de la voie" required>
         <input type="text" id="code_postal" placeholder="Code Postal" required>
         <input type="text" id="ville" placeholder="Ville" required>
         <input type="text" id="pays" placeholder="Pays" required>
-        <input type="text" id="latitude" placeholder="Latitude" required>
-        <input type="text" id="longitude" placeholder="Longitude" required>
+        <input type="number" step="any" id="latitude" placeholder="Latitude">
+        <input type="number" step="any" id="longitude" placeholder="Longitude">
+        <input type="date" id="date_der_maj">
         <button type="submit">Ajouter</button>
     </form>
 
-    <h1>Liste des Adresses</h1>
+    <h2>Liste des Adresses</h2>
     <table border="1">
         <thead>
             <tr>
                 <th>Numéro</th>
-                <th>Nom de Voie</th>
+                <th>Voie</th>
                 <th>Code Postal</th>
                 <th>Ville</th>
                 <th>Pays</th>
                 <th>Latitude</th>
                 <th>Longitude</th>
+                <th>Date</th>
                 <th>Actions</th>
             </tr>
         </thead>
-        <tbody id="addressTableBody"></tbody>
+        <tbody id="addresses-list"></tbody>
     </table>
-
-    <script>
-        async function loadAddresses() {
-            const response = await fetch("http://localhost:3000/addresses");
-            const addresses = await response.json();
-            const tableBody = document.getElementById("addressTableBody");
-            tableBody.innerHTML = "";
-            addresses.forEach(address => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>${address.numero}</td>
-                    <td>${address.voie_nom}</td>
-                    <td>${address.code_postal}</td>
-                    <td>${address.ville}</td>
-                    <td>${address.pays}</td>
-                    <td>${address.latitude}</td>
-                    <td>${address.longitude}</td>
-                    <td>
-                        <button onclick="window.location.href='edit.html?id=${address._id}'">Modifier</button>
-                        <button onclick="deleteAddress('${address._id}')">Supprimer</button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
-        }
-
-        async function deleteAddress(id) {
-            if (confirm("Voulez-vous vraiment supprimer cette adresse ?")) {
-                await fetch(`http://localhost:3000/addresses/${id}`, { method: "DELETE" });
-                loadAddresses();
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            const form = document.getElementById("address-form");
-            const addressList = document.getElementById("addresses-list");
-
-            const API_URL = "http://localhost:3000/addresses";
-
-            // Charger les adresses
-            const loadAddresses = async () => {
-                const response = await fetch(API_URL);
-                const data = await response.json();
-                addressList.innerHTML = "";
-                data.addresses.forEach(address => {
-                    const row = document.createElement("tr");
-                    row.innerHTML = `
-                        <td>${address.numero || ""}</td>
-                        <td>${address.voie_nom || ""}</td>
-                        <td>${address.code_postal || ""}</td>
-                        <td>${address.ville || ""}</td>
-                        <td>${address.pays || ""}</td>
-                        <td>${address.latitude || ""}</td>
-                        <td>${address.longitude || ""}</td>
-                        <td>${address.date_der_maj ? new Date(address.date_der_maj).toLocaleDateString() : ""}</td>
-                        <td><button onclick="deleteAddress('${address._id}')">Supprimer</button></td>
-                    `;
-                    addressList.appendChild(row);
-                });
-            };
-
-            // Ajouter une adresse
-            form.addEventListener("submit", async (e) => {
-                e.preventDefault();
-
-                const address = {
-                    numero: document.getElementById("numero").value,
-                    voie_nom: document.getElementById("voie_nom").value,
-                    code_postal: document.getElementById("code_postal").value,
-                    ville: document.getElementById("ville").value,
-                    pays: document.getElementById("pays").value,
-                    latitude: document.getElementById("latitude").value,
-                    longitude: document.getElementById("longitude").value,
-                    date_der_maj: document.getElementById("date_der_maj").value
-                };
-
-                await fetch(API_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(address)
-                });
-
-                form.reset();
-                loadAddresses();
-            });
-
-            // Supprimer une adresse
-            window.deleteAddress = async (id) => {
-                await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-                loadAddresses();
-            };
-
-            loadAddresses();
-        });
-
-        document.addEventListener("DOMContentLoaded", loadAddresses);
-    </script>
 </body>
 </html>
