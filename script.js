@@ -55,9 +55,9 @@ document.addEventListener("DOMContentLoaded", () => {
             numero: document.getElementById("numero").value,
             voie_nom: document.getElementById("voie_nom").value,
             code_postal: document.getElementById("code_postal").value,
-            ville: document.getElementById("ville").value,
-            latitude: document.getElementById("latitude").value,
-            longitude: document.getElementById("longitude").value,
+            commune_nom: document.getElementById("ville").value,
+            lat: document.getElementById("latitude").value,
+            long: document.getElementById("longitude").value,
             date_der_maj: document.getElementById("date_der_maj").value
         };
 
