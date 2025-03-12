@@ -8,24 +8,20 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/adresses_db';
 
-// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-// MongoDB Connection
 mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('✅ MongoDB Connected'))
     .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
-// Address Schema & Model
 const addressSchema = new mongoose.Schema({
     numero: Number,
     voie_nom: String,
     code_postal: String,
-    ville: String,
-    pays: String,
-    latitude: Number,
-    longitude: Number,
+    commune_nom: String,
+    lat: Number,
+    long: Number,
     date_der_maj: Date
 }, { strict: false });
 const Address = mongoose.model('Address', addressSchema);
@@ -73,8 +69,8 @@ app.get('/addresses', async (req, res) => {
 // POST - Ajouter une adresse avec toutes les colonnes
 app.post('/addresses', async (req, res) => {
     try {
-        const { numero, voie_nom, code_postal, ville, pays, latitude, longitude, date_der_maj } = req.body;
-        const newAddress = new Address({ numero, voie_nom, code_postal, ville, pays, latitude, longitude, date_der_maj: date_der_maj ? new Date(date_der_maj) : new Date() });
+        const { numero, voie_nom, code_postal, commune_nom, lat, long, date_der_maj } = req.body;
+        const newAddress = new Address({ numero, voie_nom, code_postal, commune_nom, lat, long, date_der_maj: date_der_maj ? new Date(date_der_maj) : new Date() });
         await newAddress.save();
         res.status(201).json(newAddress);
     } catch (err) {
