@@ -10,7 +10,6 @@
     <nav>
         <ul>
             <li><a href="index.html">Ajouter une adresse</a></li>
-            <li><a href="list.html">Liste des adresses</a></li>
         </ul>
     </nav>
     
@@ -55,9 +54,9 @@
                 numero: document.getElementById("edit_numero").value,
                 voie_nom: document.getElementById("edit_voie_nom").value,
                 code_postal: document.getElementById("edit_code_postal").value,
-                ville: document.getElementById("edit_ville").value,
-                latitude: document.getElementById("edit_latitude").value,
-                longitude: document.getElementById("edit_longitude").value
+                commune_nom: document.getElementById("edit_ville").value,
+                lat: document.getElementById("edit_latitude").value,
+                long: document.getElementById("edit_longitude").value
             };
             await fetch(`http://localhost:3000/addresses/${addressId}`, {
                 method: "PUT",
