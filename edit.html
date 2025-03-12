@@ -20,7 +20,6 @@
         <input type="text" id="edit_voie_nom" placeholder="Nom de Voie" required>
         <input type="text" id="edit_code_postal" placeholder="Code Postal" required>
         <input type="text" id="edit_ville" placeholder="Ville" required>
-        <input type="text" id="edit_pays" placeholder="Pays" required>
         <input type="text" id="edit_latitude" placeholder="Latitude" required>
         <input type="text" id="edit_longitude" placeholder="Longitude" required>
         <button type="submit">Modifier</button>
@@ -43,10 +42,9 @@
             document.getElementById("edit_numero").value = address.numero;
             document.getElementById("edit_voie_nom").value = address.voie_nom;
             document.getElementById("edit_code_postal").value = address.code_postal;
-            document.getElementById("edit_ville").value = address.ville;
-            document.getElementById("edit_pays").value = address.pays;
-            document.getElementById("edit_latitude").value = address.latitude;
-            document.getElementById("edit_longitude").value = address.longitude;
+            document.getElementById("edit_ville").value = address.commune_nom;
+            document.getElementById("edit_latitude").value = address.lat;
+            document.getElementById("edit_longitude").value = address.long;
         });
 
         document.getElementById("editAddressForm").addEventListener("submit", async function(event) {
@@ -57,7 +55,6 @@
                 voie_nom: document.getElementById("edit_voie_nom").value,
                 code_postal: document.getElementById("edit_code_postal").value,
                 ville: document.getElementById("edit_ville").value,
-                pays: document.getElementById("edit_pays").value,
                 latitude: document.getElementById("edit_latitude").value,
                 longitude: document.getElementById("edit_longitude").value
             };
@@ -66,7 +63,7 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(updatedAddress)
             });
-            window.location.href = "list.html";
+            window.location.href = "index.html";
         });
     </script>
 </body>

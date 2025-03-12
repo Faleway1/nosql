@@ -49,3 +49,5 @@ MongoDB Community Edition et Mongo Shell sont maintenant installés et prêts à
 - Express
 - Mongoose
 - nodejs
+- dotenv
+- body parser
