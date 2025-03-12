@@ -1,52 +1,96 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const router = express.Router();
+require('dotenv').config();
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const bodyParser = require('body-parser');
 
-mongoose.connect("mongodb://localhost:27017/adresses_db", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+const app = express();
+const PORT = process.env.PORT || 3000;
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/adresses_db';
+
+// Middleware
+app.use(cors());
+app.use(bodyParser.json());
+
+// MongoDB Connection
+mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log('✅ MongoDB Connected'))
+    .catch(err => console.error('❌ MongoDB Connection Error:', err));
+
+// Address Schema & Model
+const addressSchema = new mongoose.Schema({}, { strict: false });
+const Address = mongoose.model('Address', addressSchema);
+
+// GET - Liste avec pagination, projection, tri et recherche avancée
+app.get('/addresses', async (req, res) => {
+    try {
+        let { page = 1, limit = 20, sortField, sortOrder, fields, search, startDate, endDate } = req.query;
+        page = parseInt(page);
+        limit = parseInt(limit);
+        
+        let query = {};
+        if (search) {
+            query["voie_nom"] = { $regex: search, $options: 'i' };
+        }
+        if (startDate || endDate) {
+            query["date_der_maj"] = {};
+            if (startDate) query["date_der_maj"].$gte = new Date(startDate);
+            if (endDate) query["date_der_maj"].$lte = new Date(endDate);
+        }
+
+        let projection = {};
+        if (fields) {
+            fields.split(',').forEach(field => projection[field] = 1);
+        }
+
+        let sort = {};
+        if (sortField && sortOrder) {
+            sort[sortField] = sortOrder === 'asc' ? 1 : -1;
+        }
+
+        const addresses = await Address.find(query)
+            .select(projection)
+            .sort(sort)
+            .skip((page - 1) * limit)
+            .limit(limit);
+        
+        const total = await Address.countDocuments(query);
+        res.json({ total, page, limit, addresses });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
-// Schéma et modèle MongoDB
-const ItemSchema = new mongoose.Schema({
-  nom: String,
-});
-const Item = mongoose.model("Item", ItemSchema);
-
-// Route : Afficher les 20 premiers éléments avec ajout, modification et suppression
-router.get("/xxx", async (req, res) => {
-  const items = await Item.find().limit(20);
-  res.json(items);
-});
-
-// Route : Afficher le formulaire d'ajout
-router.get("/xxx/edit", (req, res) => {
-  res.send('<form action="/xxx/edit" method="POST">Nom: <input type="text" name="nom"><button type="submit">Ajouter</button></form>');
+// POST - Ajouter une adresse
+app.post('/addresses', async (req, res) => {
+    try {
+        const newAddress = new Address(req.body);
+        await newAddress.save();
+        res.status(201).json(newAddress);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
 });
 
-// Route : Ajouter un élément
-router.post("/xxx/edit", async (req, res) => {
-  await Item.create({ nom: req.body.nom });
-  res.redirect("/xxx");
+// PUT - Modifier une adresse
+app.put('/addresses/:id', async (req, res) => {
+    try {
+        const updatedAddress = await Address.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        res.json(updatedAddress);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
 });
 
-// Route : Afficher le formulaire de modification
-router.get("/xxx/edit/:id", async (req, res) => {
-  const item = await Item.findById(req.params.id);
-  res.send(`<form action="/xxx/edit/${item._id}" method="POST">Nom: <input type="text" name="nom" value="${item.nom}"><button type="submit">Modifier</button></form>`);
+// DELETE - Supprimer une adresse
+app.delete('/addresses/:id', async (req, res) => {
+    try {
+        await Address.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Adresse supprimée' });
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
 });
 
-// Route : Modifier un élément
-router.post("/xxx/edit/:id", async (req, res) => {
-  await Item.findByIdAndUpdate(req.params.id, { nom: req.body.nom });
-  res.redirect("/xxx");
-});
-
-// Route : Supprimer un élément
-router.post("/xxx/delete/:id", async (req, res) => {
-  await Item.findByIdAndDelete(req.params.id);
-  res.redirect("/xxx");
-});
-
-module.exports = router;
-
+// Lancer le serveur
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
