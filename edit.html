@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier/Supprimer une Adresse</title>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="index.html">Ajouter une adresse</a></li>
+            <li><a href="list.html">Liste des adresses</a></li>
+            <li><a href="edit.html">Modifier/Supprimer</a></li>
+        </ul>
+    </nav>
+    
+    <h1>Modifier ou Supprimer une Adresse</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Numéro</th>
+                <th>Nom de Voie</th>
+                <th>Code Postal</th>
+                <th>Ville</th>
+                <th>Pays</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+                <th>Date de MAJ</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="addressTableBody">
+        </tbody>
+    </table>
+
+    <script>
+        async function fetchAddresses() {
+            const response = await fetch("http://localhost:3000/addresses");
+            const addresses = await response.json();
+            
+            const tableBody = document.getElementById("addressTableBody");
+            tableBody.innerHTML = "";
+            
+            addresses.forEach(address => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${address.numero}</td>
+                    <td>${address.voie_nom}</td>
+                    <td>${address.code_postal}</td>
+                    <td>${address.ville}</td>
+                    <td>${address.pays}</td>
+                    <td>${address.latitude}</td>
+                    <td>${address.longitude}</td>
+                    <td>${address.date_der_maj || "N/A"}</td>
+                    <td>
+                        <button onclick="editAddress('${address._id}')">Modifier</button>
+                        <button onclick="deleteAddress('${address._id}')">Supprimer</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        async function deleteAddress(id) {
+            if (confirm("Voulez-vous vraiment supprimer cette adresse ?")) {
+                await fetch(`http://localhost:3000/addresses/${id}`, { method: "DELETE" });
+                fetchAddresses();
+            }
+        }
+
+        async function editAddress(id) {
+            const newVoieNom = prompt("Nouveau nom de voie:");
+            if (newVoieNom) {
+                await fetch(`http://localhost:3000/addresses/${id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ voie_nom: newVoieNom })
+                });
+                fetchAddresses();
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", fetchAddresses);
+    </script>
+</body>
+</html>
