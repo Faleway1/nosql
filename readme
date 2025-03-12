@@ -45,7 +45,12 @@ MongoDB Community Edition et Mongo Shell sont maintenant installés et prêts à
   node ./server.js
   ```
 
+Pour accéder a l'app lancez le fichier index.html avec un live server.
+Depuis l'interface front, vous pourrez ajouter, récupérer, supprimer ou editer des données.
+
 ### **Dépendances :**
 - Express
 - Mongoose
 - nodejs
+- body parser
+- dot env

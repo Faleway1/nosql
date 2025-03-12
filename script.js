@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const API_URL = "http://localhost:3000/addresses";
 
-    // Charger les adresses
     const loadAddresses = async () => {
         const response = await fetch(API_URL);
         const data = await response.json();
@@ -26,7 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     };
 
-    // Ajouter une adresse
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -51,7 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
         loadAddresses();
     });
 
-    // Supprimer une adresse
     window.deleteAddress = async (id) => {
         await fetch(`${API_URL}/${id}`, { method: "DELETE" });
         loadAddresses();

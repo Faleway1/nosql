@@ -8,30 +8,26 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/adresses_db';
 
-// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-// MongoDB Connection
 mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('✅ MongoDB Connected'))
     .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
-// Address Schema & Model
 const addressSchema = new mongoose.Schema({
     numero: Number,
     voie_nom: String,
     code_postal: String,
-    ville: String,
-    pays: String,
+    commune_nom: String,
     latitude: Number,
     longitude: Number,
     date_der_maj: Date
 }, { strict: false });
 const Address = mongoose.model('Address', addressSchema);
 
-// GET - Liste avec pagination, projection, tri et recherche avancée
-app.get('/addresses', async (req, res) => {
+// GET 
+app.get('/addresses/xxx', async (req, res) => {
     try {
         let { page = 1, limit = 20, sortField, sortOrder, fields, search, startDate, endDate } = req.query;
         page = parseInt(page);
@@ -70,11 +66,11 @@ app.get('/addresses', async (req, res) => {
     }
 });
 
-// POST - Ajouter une adresse avec toutes les colonnes
+// POST 
 app.post('/addresses', async (req, res) => {
     try {
-        const { numero, voie_nom, code_postal, ville, pays, latitude, longitude, date_der_maj } = req.body;
-        const newAddress = new Address({ numero, voie_nom, code_postal, ville, pays, latitude, longitude, date_der_maj: date_der_maj ? new Date(date_der_maj) : new Date() });
+        const { numero, voie_nom, code_postal, commune_nom, latitude, longitude, date_der_maj } = req.body;
+        const newAddress = new Address({ numero, voie_nom, code_postal, commune_nom, latitude, longitude, date_der_maj: date_der_maj ? new Date(date_der_maj) : new Date() });
         await newAddress.save();
         res.status(201).json(newAddress);
     } catch (err) {
@@ -82,7 +78,7 @@ app.post('/addresses', async (req, res) => {
     }
 });
 
-// PUT - Modifier une adresse
+// PUT
 app.put('/addresses/:id', async (req, res) => {
     try {
         const updatedAddress = await Address.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -92,7 +88,7 @@ app.put('/addresses/:id', async (req, res) => {
     }
 });
 
-// DELETE - Supprimer une adresse
+// DELETE
 app.delete('/addresses/:id', async (req, res) => {
     try {
         await Address.findByIdAndDelete(req.params.id);
@@ -102,5 +98,4 @@ app.delete('/addresses/:id', async (req, res) => {
     }
 });
 
-// Lancer le serveur
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
