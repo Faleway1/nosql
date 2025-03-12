@@ -50,7 +50,6 @@ document.addEventListener("DOMContentLoaded", () => {
         loadAddresses();
     });
 
-    // Supprimer une adresse
     window.deleteAddress = async (id) => {
         if (confirm("Voulez-vous vraiment supprimer cette adresse ?")) {
             await fetch(`${API_URL}/${id}`, { method: "DELETE" });
@@ -58,7 +57,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    // Modifier une adresse
     window.editAddress = (id) => {
         window.location.href = `edit.html?id=${id}`;
     };
