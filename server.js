@@ -18,7 +18,16 @@ mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
 // Address Schema & Model
-const addressSchema = new mongoose.Schema({}, { strict: false });
+const addressSchema = new mongoose.Schema({
+    numero: Number,
+    voie_nom: String,
+    code_postal: String,
+    ville: String,
+    pays: String,
+    latitude: Number,
+    longitude: Number,
+    date_der_maj: Date
+}, { strict: false });
 const Address = mongoose.model('Address', addressSchema);
 
 // GET - Liste avec pagination, projection, tri et recherche avancée
@@ -61,10 +70,11 @@ app.get('/addresses', async (req, res) => {
     }
 });
 
-// POST - Ajouter une adresse
+// POST - Ajouter une adresse avec toutes les colonnes
 app.post('/addresses', async (req, res) => {
     try {
-        const newAddress = new Address(req.body);
+        const { numero, voie_nom, code_postal, ville, pays, latitude, longitude, date_der_maj } = req.body;
+        const newAddress = new Address({ numero, voie_nom, code_postal, ville, pays, latitude, longitude, date_der_maj: date_der_maj ? new Date(date_der_maj) : new Date() });
         await newAddress.save();
         res.status(201).json(newAddress);
     } catch (err) {
