@@ -20,21 +20,48 @@
         <button type="submit">Ajouter</button>
     </form>
 
+    <h2>Filtres</h2>
+    <label>Champs à afficher:</label>
+    <div id="field-selection">
+        <input type="checkbox" value="numero" checked> Numéro
+        <input type="checkbox" value="voie_nom" checked> Voie
+        <input type="checkbox" value="code_postal" checked> Code Postal
+        <input type="checkbox" value="ville" checked> Ville
+        <input type="checkbox" value="latitude" checked> Latitude
+        <input type="checkbox" value="longitude" checked> Longitude
+        <input type="checkbox" value="date_der_maj" checked> Date
+    </div>
+
+    <label>Résultats par page:</label>
+    <select id="limit">
+        <option value="20">20</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+    </select>
+
+    <label>Trier par:</label>
+    <select id="sortField">
+        <option value="voie_nom">Voie</option>
+        <option value="code_postal">Code Postal</option>
+        <option value="ville">Ville</option>
+    </select>
+    <select id="sortOrder">
+        <option value="asc">Croissant</option>
+        <option value="desc">Décroissant</option>
+    </select>
+
     <h2>Liste des Adresses</h2>
     <table border="1">
         <thead>
-            <tr>
-                <th>Numéro</th>
-                <th>Voie</th>
-                <th>Code Postal</th>
-                <th>Ville</th>
-                <th>Latitude</th>
-                <th>Longitude</th>
-                <th>Date</th>
+            <tr id="table-header">
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody id="addresses-list"></tbody>
     </table>
+
+    <button id="prev-page">Précédent</button>
+    <span id="page-info"></span>
+    <button id="next-page">Suivant</button>
 </body>
 </html>

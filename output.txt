@@ -1,0 +1,347 @@
+[32m📄 .gitignore[39m
+    Contenu :
+    node_modules
+    
+[32m📄 edit.html[39m
+    Contenu :
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Modifier une Adresse</title>
+    </head>
+    <body>
+        <nav>
+            <ul>
+                <li><a href="index.html">Ajouter une adresse</a></li>
+                <li><a href="list.html">Liste des adresses</a></li>
+            </ul>
+        </nav>
+        
+        <h1>Modifier une Adresse</h1>
+        <form id="editAddressForm">
+            <input type="hidden" id="addressId">
+            <input type="text" id="edit_numero" placeholder="Numéro" required>
+            <input type="text" id="edit_voie_nom" placeholder="Nom de Voie" required>
+            <input type="text" id="edit_code_postal" placeholder="Code Postal" required>
+            <input type="text" id="edit_ville" placeholder="Ville" required>
+            <input type="text" id="edit_latitude" placeholder="Latitude" required>
+            <input type="text" id="edit_longitude" placeholder="Longitude" required>
+            <button type="submit">Modifier</button>
+        </form>
+    
+        <script>
+            document.addEventListener("DOMContentLoaded", async function() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const addressId = urlParams.get("id");
+                if (!addressId) {
+                    alert("Aucune adresse spécifiée");
+                    window.location.href = "list.html";
+                    return;
+                }
+                document.getElementById("addressId").value = addressId;
+    
+                const response = await fetch(`http://localhost:3000/addresses/${addressId}`);
+                const address = await response.json();
+    
+                document.getElementById("edit_numero").value = address.numero;
+                document.getElementById("edit_voie_nom").value = address.voie_nom;
+                document.getElementById("edit_code_postal").value = address.code_postal;
+                document.getElementById("edit_ville").value = address.commune_nom;
+                document.getElementById("edit_latitude").value = address.lat;
+                document.getElementById("edit_longitude").value = address.long;
+            });
+    
+            document.getElementById("editAddressForm").addEventListener("submit", async function(event) {
+                event.preventDefault();
+                const addressId = document.getElementById("addressId").value;
+                const updatedAddress = {
+                    numero: document.getElementById("edit_numero").value,
+                    voie_nom: document.getElementById("edit_voie_nom").value,
+                    code_postal: document.getElementById("edit_code_postal").value,
+                    ville: document.getElementById("edit_ville").value,
+                    latitude: document.getElementById("edit_latitude").value,
+                    longitude: document.getElementById("edit_longitude").value
+                };
+                await fetch(`http://localhost:3000/addresses/${addressId}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(updatedAddress)
+                });
+                window.location.href = "index.html";
+            });
+        </script>
+    </body>
+    </html>
+    
+[32m📄 index.html[39m
+    Contenu :
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Gestion des Adresses</title>
+        <script defer src="script.js"></script>
+    </head>
+    <body>
+        <h1>Gestion des Adresses</h1>
+    
+        <form id="address-form">
+            <input type="number" id="numero" placeholder="Numéro" required>
+            <input type="text" id="voie_nom" placeholder="Nom de la voie" required>
+            <input type="text" id="code_postal" placeholder="Code Postal" required>
+            <input type="text" id="ville" placeholder="Ville" required>
+            <input type="number" step="any" id="latitude" placeholder="Latitude">
+            <input type="number" step="any" id="longitude" placeholder="Longitude">
+            <input type="date" id="date_der_maj">
+            <button type="submit">Ajouter</button>
+        </form>
+    
+        <h2>Liste des Adresses</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Numéro</th>
+                    <th>Voie</th>
+                    <th>Code Postal</th>
+                    <th>Ville</th>
+                    <th>Latitude</th>
+                    <th>Longitude</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="addresses-list"></tbody>
+        </table>
+    </body>
+    </html>
+[32m📄 readme[39m
+    Contenu :
+    **Installation de MongoDB Community et Mongo Shell**
+    
+    ---
+    
+    1. **Télécharger MongoDB** :
+       - Se rendre sur le site officiel de MongoDB : [https://www.mongodb.com/try/download/community](https://www.mongodb.com/try/download/community)
+       - Sélectionner la version Community Edition et choisir le package MSI.
+    2. **Installer MongoDB** :
+       - Exécuter le fichier MSI téléchargé.
+       - Suivre les instructions.
+       - Finaliser l'installation.
+    
+    ---
+    
+    ### **Vérifier l'installation de Mongo Shell**
+    - Taper la commande suivante pour vérifier si `mongosh` est installé :
+      ```sh
+      mongosh --version
+      ```
+    
+    MongoDB Community Edition et Mongo Shell sont maintenant installés et prêts à être utilisés. Vous pouvez commencer à interagir avec votre base de données via le shell ou en utilisant une interface graphique comme MongoDB Compass.
+    
+    ### **Créer une DB**
+    - Il faut d'abord créer une connection 
+        Cliquer sur "Add new connection".
+        Entrer l’URI de connexion (mongodb://localhost:27017), puis cliquer sur "Connect".
+    - Cliquer sur "Create database"
+        Entrer le nom de la db 
+        Entrer le nom de la première collection (par exemple "holidays") et creer la db.
+    - Vous pouvez charger les données en important un fichier (par exemple un fichier en csv accessible en cliquant [ici](https://www.data.gouv.fr/fr/datasets/jours-feries-en-france/))
+    
+    
+    ### **Jeu de données utilisées dans le projet :**
+    
+    - On utilise dans notre projet les adresses en France
+    [Lien vers le jeu de donnée](https://datahub.bordeaux-metropole.fr/explore/dataset/met_adresse-format-bal/information/?disjunctive.commune_nom&disjunctive.certification_commune)
+    
+    ### **Lancer le projet**
+    - Tout d'abord ecrivez dans le terminal :
+      ```sh
+      npm i
+      ```
+    - Ensuite si tout s'est bien passé, lancez le projet en utilisant nodejs :
+      ```sh
+      node ./server.js
+      ```
+    
+    ### **Dépendances :**
+    - Express
+    - Mongoose
+    - nodejs
+    - dotenv
+    - body parser
+[32m📄 script.js[39m
+    Contenu :
+    document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("address-form");
+        const addressList = document.getElementById("addresses-list");
+    
+        const API_URL = "http://localhost:3000/addresses";
+    
+        const loadAddresses = async () => {
+            const response = await fetch(API_URL);
+            const data = await response.json();
+            addressList.innerHTML = "";
+            data.addresses.forEach(address => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${address.numero || ""}</td>
+                    <td>${address.voie_nom || ""}</td>
+                    <td>${address.code_postal || ""}</td>
+                    <td>${address.commune_nom || ""}</td>
+                    <td>${address.lat || ""}</td>
+                    <td>${address.long || ""}</td>
+                    <td>${address.date_der_maj ? new Date(address.date_der_maj).toLocaleDateString() : ""}</td>
+                    <td>
+                        <button onclick="editAddress('${address._id}')">Modifier</button>
+                        <button onclick="deleteAddress('${address._id}')">Supprimer</button>
+                    </td>
+                `;
+                addressList.appendChild(row);
+            });
+        };
+    
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+    
+            const address = {
+                numero: document.getElementById("numero").value,
+                voie_nom: document.getElementById("voie_nom").value,
+                code_postal: document.getElementById("code_postal").value,
+                commune_nom: document.getElementById("ville").value,
+                lat: document.getElementById("latitude").value,
+                long: document.getElementById("longitude").value,
+                date_der_maj: document.getElementById("date_der_maj").value
+            };
+    
+            await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(address)
+            });
+    
+            form.reset();
+            loadAddresses();
+        });
+    
+        // Supprimer une adresse
+        window.deleteAddress = async (id) => {
+            if (confirm("Voulez-vous vraiment supprimer cette adresse ?")) {
+                await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+                loadAddresses();
+            }
+        };
+    
+        // Modifier une adresse
+        window.editAddress = (id) => {
+            window.location.href = `edit.html?id=${id}`;
+        };
+    
+        loadAddresses();
+    });
+[32m📄 server.js[39m
+    Contenu :
+    require('dotenv').config();
+    const express = require('express');
+    const mongoose = require('mongoose');
+    const cors = require('cors');
+    const bodyParser = require('body-parser');
+    
+    const app = express();
+    const PORT = process.env.PORT || 3000;
+    const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/adresses_db';
+    
+    app.use(cors());
+    app.use(bodyParser.json());
+    
+    mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+        .then(() => console.log('✅ MongoDB Connected'))
+        .catch(err => console.error('❌ MongoDB Connection Error:', err));
+    
+    const addressSchema = new mongoose.Schema({
+        numero: Number,
+        voie_nom: String,
+        code_postal: String,
+        commune_nom: String,
+        lat: Number,
+        long: Number,
+        date_der_maj: Date
+    }, { strict: false });
+    const Address = mongoose.model('Address', addressSchema);
+    
+    // GET - Liste avec pagination, projection, tri et recherche avancée
+    app.get('/addresses', async (req, res) => {
+        try {
+            let { page = 1, limit = 20, sortField, sortOrder, fields, search, startDate, endDate } = req.query;
+            page = parseInt(page);
+            limit = parseInt(limit);
+            
+            let query = {};
+            if (search) {
+                query["voie_nom"] = { $regex: search, $options: 'i' };
+            }
+            if (startDate || endDate) {
+                query["date_der_maj"] = {};
+                if (startDate) query["date_der_maj"].$gte = new Date(startDate);
+                if (endDate) query["date_der_maj"].$lte = new Date(endDate);
+            }
+    
+            let projection = {};
+            if (fields) {
+                fields.split(',').forEach(field => projection[field] = 1);
+            }
+    
+            let sort = {};
+            if (sortField && sortOrder) {
+                sort[sortField] = sortOrder === 'asc' ? 1 : -1;
+            }
+    
+            const addresses = await Address.find(query)
+                .select(projection)
+                .sort(sort)
+                .skip((page - 1) * limit)
+                .limit(limit);
+            
+            const total = await Address.countDocuments(query);
+            res.json({ total, page, limit, addresses });
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    });
+    
+    // POST - Ajouter une adresse avec toutes les colonnes
+    app.post('/addresses', async (req, res) => {
+        try {
+            const { numero, voie_nom, code_postal, commune_nom, lat, long, date_der_maj } = req.body;
+            const newAddress = new Address({ numero, voie_nom, code_postal, commune_nom, lat, long, date_der_maj: date_der_maj ? new Date(date_der_maj) : new Date() });
+            await newAddress.save();
+            res.status(201).json(newAddress);
+        } catch (err) {
+            res.status(400).json({ error: err.message });
+        }
+    });
+    
+    // PUT - Modifier une adresse
+    app.put('/addresses/:id', async (req, res) => {
+        try {
+            const updatedAddress = await Address.findByIdAndUpdate(req.params.id, req.body, { new: true });
+            res.json(updatedAddress);
+        } catch (err) {
+            res.status(400).json({ error: err.message });
+        }
+    });
+    
+    // DELETE - Supprimer une adresse
+    app.delete('/addresses/:id', async (req, res) => {
+        try {
+            await Address.findByIdAndDelete(req.params.id);
+            res.json({ message: 'Adresse supprimée' });
+        } catch (err) {
+            res.status(400).json({ error: err.message });
+        }
+    });
+    
+    // Lancer le serveur
+    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
